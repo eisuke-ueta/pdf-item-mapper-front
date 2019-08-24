@@ -11,6 +11,7 @@ export const DEFAULT_PAGE_RULE = {
   opacity: 0.3,
   draggable: true,
   rule: {
+    itemType: 'HEADER',
     key: '',
     type: 'POSITION',
     pageNumber: 0,
@@ -25,10 +26,14 @@ export const DEFAULT_PAGE_RULE = {
   }
 }
 
+const DEFAULT_SCALE = 1.5
+
 export const state = () => ({
   pageRules: [],
   pageNumber: 0,
-  pageRange: []
+  pageRange: [],
+  scale: DEFAULT_SCALE,
+  scaleRate: DEFAULT_SCALE / 2.0
 })
 
 export const mutations = {

@@ -61,7 +61,8 @@ export default {
     },
     ...mapState('pdf', {
       pageNumber: state => state.pageNumber,
-      pageRules: state => state.pageRules
+      pageRules: state => state.pageRules,
+      scaleRate: state => state.scaleRate
     })
   },
 
@@ -85,8 +86,8 @@ export default {
         this.pages = pages.map(page => {
           // set stage size for annotation
           page.stageSize = {
-            width: page.view[2],
-            height: page.view[3]
+            width: page.view[2] * this.scaleRate,
+            height: page.view[3] * this.scaleRate
           }
           return page
         })
@@ -97,25 +98,25 @@ export default {
     handleRectClick(e) {},
     handleDragEnd(e) {
       const pageRule = cloneDeep(e.target.attrs)
-      pageRule.rule.position.top = Math.round(pageRule.y)
-      pageRule.rule.position.left = Math.round(pageRule.x)
+      pageRule.rule.position.top = Math.round(pageRule.y / this.scaleRate)
+      pageRule.rule.position.left = Math.round(pageRule.x / this.scaleRate)
       pageRule.rule.position.height = Math.round(
-        pageRule.height * pageRule.scaleY
+        (pageRule.height * pageRule.scaleY) / this.scaleRate
       )
       pageRule.rule.position.width = Math.round(
-        pageRule.width * pageRule.scaleX
+        (pageRule.width * pageRule.scaleX) / this.scaleRate
       )
       this.updatePageRule({ pageRule: pageRule })
     },
     handleTransformEnd(e) {
       const pageRule = cloneDeep(e.target.attrs)
-      pageRule.rule.position.top = Math.round(pageRule.y)
-      pageRule.rule.position.left = Math.round(pageRule.x)
+      pageRule.rule.position.top = Math.round(pageRule.y / this.scaleRate)
+      pageRule.rule.position.left = Math.round(pageRule.x / this.scaleRate)
       pageRule.rule.position.height = Math.round(
-        pageRule.height * pageRule.scaleY
+        (pageRule.height * pageRule.scaleY) / this.scaleRate
       )
       pageRule.rule.position.width = Math.round(
-        pageRule.width * pageRule.scaleX
+        (pageRule.width * pageRule.scaleX) / this.scaleRate
       )
       this.updatePageRule({ pageRule: pageRule })
     },

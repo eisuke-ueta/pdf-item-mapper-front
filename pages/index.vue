@@ -102,9 +102,7 @@ export default {
   data() {
     return {
       file: null,
-      isFileUploaded: false,
       url: '',
-      scale: 2.0,
       exportDialog: false,
       editDialog: false,
       editPageRule: {},
@@ -135,19 +133,20 @@ export default {
     ...mapState('pdf', {
       pageRules: state => state.pageRules,
       pageNumber: state => state.pageNumber,
-      pageRange: state => state.pageRange
+      pageRange: state => state.pageRange,
+      scale: state => state.scale
     })
   },
   methods: {
-    onFileChange(file) {
-      const objectURL = window.URL.createObjectURL(file)
+    onFileChange(fileObject) {
+      const objectURL = window.URL.createObjectURL(fileObject)
       this.url = objectURL
     },
     getPosition(position) {
       return (
-        position.top +
-        ', ' +
         position.left +
+        ', ' +
+        position.top +
         ', ' +
         position.width +
         ', ' +
