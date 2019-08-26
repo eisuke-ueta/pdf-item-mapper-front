@@ -2,7 +2,7 @@
 v-container(fluid fill-height)
   v-layout.mt-3(v-if="!url" justify-center align-center)
     v-flex(xs12 sm6 md4)
-      v-file-input(label="Upload PDF file here." accept="application/pdf" outlined v-model="file" @change="onFileChange")
+      v-file-input(label="Upload PDF file here." accept="application/pdf" outlined v-model="file" @change="onPDFFileChange")
   v-layout.mt-3(v-if="url" justify-center)
     v-flex.mr-3
       PDFDocument(v-bind="{url, scale}")
@@ -18,7 +18,9 @@ v-container(fluid fill-height)
             label="Current Page"
             @change="onChangeSelectedPage"
             )
-          v-btn.primary.mr-2(@click="addPageRule" small) Add Rule
+          v-btn.primary.mr-2(@click="addDefaultPageRule" small) Add Rule
+          v-btn.mr-2(@click="$refs.importUpload.click()" small) Import
+            input(v-show="false" ref="importUpload" type="file" @change="onJsonFileChange" accept="application/json")
           v-dialog(v-model="exportDialog" max-width="800px")
             template(v-slot:activator="{ on }")
               v-btn.mr-0(small v-on="on") Export
@@ -102,6 +104,7 @@ export default {
   data() {
     return {
       file: null,
+      // url: 'https://cdn.filestackcontent.com/5qOCEpKzQldoRsVatUPS',
       url: '',
       exportDialog: false,
       editDialog: false,
@@ -134,13 +137,31 @@ export default {
       pageRules: state => state.pageRules,
       pageNumber: state => state.pageNumber,
       pageRange: state => state.pageRange,
-      scale: state => state.scale
+      scale: state => state.scale,
+      detailSpec: state => state.detailSpec
     })
   },
   methods: {
-    onFileChange(fileObject) {
+    onPDFFileChange(fileObject) {
       const objectURL = window.URL.createObjectURL(fileObject)
       this.url = objectURL
+    },
+    onJsonFileChange(e) {
+      const reader = new FileReader()
+      reader.onload = this.onReaderLoad
+      reader.readAsText(e.target.files[0])
+    },
+    async onReaderLoad(event) {
+      const config = JSON.parse(event.target.result)
+      await this.initPageRules()
+      this.importPageRules(config)
+    },
+    importPageRules(config) {
+      config.headerSpec.rules.forEach(rule => {
+        // TODO Add validation
+        this.addPageRule({ itemType: 'HEADER', rule: rule })
+      })
+      this.updateDetailSpec({ detailSpec: config.detailSpec })
     },
     getPosition(position) {
       return (
@@ -173,10 +194,7 @@ export default {
         headerSpec: {
           rules: headerRules
         },
-        detailSpec: {
-          startPage: 1,
-          pageRules: []
-        }
+        detailSpec: this.detailSpec
       }
       return config
     },
@@ -203,17 +221,20 @@ export default {
     handleDelete(item) {
       this.deletePageRule({ pageRule: item })
     },
-    addPageRule() {
-      this.addPageRule()
+    addDefaultPageRule() {
+      this.addDefaultPageRule()
     },
     onChangeSelectedPage(value) {
       this.setPageNumber({ pageNumber: value })
     },
     ...mapActions('pdf', [
       'addPageRule',
+      'addDefaultPageRule',
       'deletePageRule',
       'updatePageRule',
-      'setPageNumber'
+      'setPageNumber',
+      'initPageRules',
+      'updateDetailSpec'
     ])
   }
 }

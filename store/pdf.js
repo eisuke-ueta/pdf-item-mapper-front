@@ -32,6 +32,10 @@ export const state = () => ({
   pageRules: [],
   pageNumber: 0,
   pageRange: [],
+  detailSpec: {
+    startPage: 1,
+    pageRules: []
+  },
   scale: DEFAULT_SCALE,
   scaleRate: DEFAULT_SCALE / 2.0
 })
@@ -56,14 +60,35 @@ export const mutations = {
   },
   setPageRange(state, { pageRange }) {
     state.pageRange = pageRange
+  },
+  setDetailSpec(state, { detailSpec }) {
+    state.detailSpec = detailSpec
   }
 }
 
 export const actions = {
-  addPageRule({ state, commit }) {
+  addDefaultPageRule({ state, commit }) {
     const newPageRule = cloneDeep(DEFAULT_PAGE_RULE)
     newPageRule.name = uuidv1()
     newPageRule.rule.pageNumber = state.pageNumber
+    commit('addPageRule', { pageRule: newPageRule })
+  },
+  addPageRule({ state, commit }, { itemType, rule }) {
+    const newPageRule = cloneDeep(DEFAULT_PAGE_RULE)
+    newPageRule.name = uuidv1()
+    newPageRule.rule = cloneDeep(rule)
+    newPageRule.rule.itemType = itemType
+    newPageRule.rule.onlyNumber = rule.onlyNumber ? rule.onlyNumber : false
+    newPageRule.rule.trim = rule.trim ? rule.trim : true
+    newPageRule.rule.pageNumber = rule.page - 1
+    delete newPageRule.rule.page
+
+    const position = cloneDeep(rule.position)
+    newPageRule.x = Math.round(position.left * state.scaleRate)
+    newPageRule.y = Math.round(position.top * state.scaleRate)
+    newPageRule.width = Math.round(position.width * state.scaleRate)
+    newPageRule.height = Math.round(position.height * state.scaleRate)
+
     commit('addPageRule', { pageRule: newPageRule })
   },
   deletePageRule({ commit }, { pageRule }) {
@@ -72,10 +97,16 @@ export const actions = {
   updatePageRule({ commit }, { pageRule }) {
     commit('updatePageRule', { pageRule: pageRule })
   },
+  initPageRules({ commit }) {
+    commit('setPageRules', { pageRules: [] })
+  },
   setPageNumber({ commit }, { pageNumber }) {
     commit('setPageNumber', { pageNumber: pageNumber })
   },
   setPageRange({ commit }, { pageRange }) {
     commit('setPageRange', { pageRange: pageRange })
+  },
+  updateDetailSpec({ commit }, { detailSpec }) {
+    commit('setDetailSpec', { detailSpec: detailSpec })
   }
 }
