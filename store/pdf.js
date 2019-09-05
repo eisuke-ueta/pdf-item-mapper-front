@@ -26,7 +26,7 @@ export const DEFAULT_PAGE_RULE = {
   }
 }
 
-const DEFAULT_SCALE = 1.5
+const DEFAULT_SCALE = 2.0
 
 export const state = () => ({
   pageRules: [],

@@ -19,7 +19,6 @@ export default {
       {
         rel: 'stylesheet',
         href:
-          // 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
           'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Material+Icons'
       }
     ]

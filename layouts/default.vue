@@ -30,4 +30,22 @@ export default {
 .v-app-bar .v-toolbar__title {
   cursor: pointer;
 }
+body {
+  margin: 0 auto;
+}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+a,
+p,
+span,
+small,
+input {
+  font-family: 'Open Sans', sans-serif;
+}
 </style>
